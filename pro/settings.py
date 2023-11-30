@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'cloudinary',
     'mpesa',
     'django_daraja',
-    'reciept',
     'records',
     'chatbox',
     'review',
