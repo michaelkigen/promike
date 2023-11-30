@@ -88,7 +88,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-        },
+        }, 
     },
 ]
 
@@ -245,6 +245,5 @@ TILL_NUMBER = '5737915'
 }'''
 
 HASHID_FIELD_SALT = "xcv24371DFGT"
-
 
 django_heroku.settings(locals())
