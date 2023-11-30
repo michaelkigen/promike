@@ -4,7 +4,6 @@ import users
 import Profile
 import menu
 import mpesa
-import reciept
 import chatbox
 import records
 import review
