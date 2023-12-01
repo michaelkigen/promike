@@ -124,6 +124,9 @@ class SubmitView(APIView):
         total = sum([item.quantity * item.food.price for item in cart.cart_item.all()])
         amount = total
         print('the total amount is: ', amount)
+        
+        if amount == 0 :
+            return Response({"error":"the total value is zero"}, status=status.HTTP_400_BAD_REQUEST)
 
         entity_id = 0
         if data.get('entity_id'):
@@ -145,8 +148,10 @@ class SubmitView(APIView):
         
         time.sleep(20)
         confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
-        
-        
+        print('RESULT CODE', confirmation_response['result_code'])
+        if confirmation_response['result_code'] != 0:
+            order = Order.objects.get(order_id = order_id)
+            order.delete()
         
         return Response({'success':'paid','response':confirmation_response})
        
