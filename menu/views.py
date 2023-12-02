@@ -380,7 +380,7 @@ class ProcessOrderView(views.APIView):
 class OrdererdFood(views.APIView):
     def get(self, request):
         try:
-            orders = Order.objects.filter(state='p')
+            orders = Order.objects.all()
         except Order.DoesNotExist:
             return Response({'detail': 'Orders not found.'}, status=status.HTTP_404_NOT_FOUND)
         print("1")
