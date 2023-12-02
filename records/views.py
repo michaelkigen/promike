@@ -107,6 +107,14 @@ def recorder(food):
         record.total_amount += total
 
         record.save()
+    order_id = food['order_id']
+    try:
+        order = Order.objects.get(order_id= order_id)
+        order.delivered_at = current_time
+        order.save()
+    except Order.DoesNotExist:
+        print("error")
+            
     return True
 
         
