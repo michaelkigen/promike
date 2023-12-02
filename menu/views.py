@@ -391,33 +391,7 @@ class OrdererdFood(views.APIView):
         order_serializer = Order_Serializer(orders, many=True)
         print("4")
 
-        if orders.exists():
-            print("5")
-            user = order_serializer.data[0]['user']
-            print("6")
-            user_serializer = UserDetailedSerializer(user)
-            print("7")
-            phone = user_serializer.data['phone_number']
-            try:
-                person = User.objects.get(phone_number = phone)
-            except User.DoesNotExist:
-                return Response({'detail': 'user not found.'}, status=status.HTTP_404_NOT_FOUND)
-            profile = Profile.objects.filter(user=person.id).first()
-            print("8")
-            location = Location.objects.filter(userProfile=profile.profile_id).first()
-            print("9")
-
-            loc_serializer = LicationSerializer(location)  # Assuming you have a LocationSerializer
-            print("10")
-            response_data = {
-                'order_id': order_serializer.data[0]['order_id'],  # Assuming you are working with a single order
-                'status': order_serializer.data[0]['state'],  # Assuming you are working with a single order
-                'created_at': order_serializer.data[0]['created_at'],  # Assuming you are working with a single order
-                'is_canceled': order_serializer.data[0]['is_canceled'],  # Assuming you are working with a single order
-                'user': user_serializer.data,
-                'ordered_food': ordered_food_serializer.data,
-                'location':loc_serializer.data
-            }
+        if orders.exists():           
 
             return Response(order_serializer.data)
         else:
