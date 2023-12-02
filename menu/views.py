@@ -381,13 +381,14 @@ class OrdererdFood(views.APIView):
     def get(self, request):
         try:
             orders = Order.objects.all()
-        except Order.DoesNotExist:
-            return Response({'detail': 'Orders not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
-        order_serializer = Order_Serializer(orders, many=True)
-        print("4 : ",order_serializer.data)          
+            order_serializer = Order_Serializer(orders, many=True)
+            print("4 : ", order_serializer.data)
+            return Response(order_serializer.data)
+        except Exception as e:
+            # Log the exception for debugging purposes
+            print(f"Error: {str(e)}")
+            return Response({'detail': 'Internal Server Error.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(order_serializer.data)
        
 
 
