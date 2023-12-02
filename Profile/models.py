@@ -24,5 +24,5 @@ class Profile(models.Model):
         
 class Location(models.Model):
     loc_id = models.UUIDField(default=uuid.uuid4 ,primary_key= True,auto_created= True, editable=False)
-    name = models.TextField(null = True)
+    name = models.CharField(max_length=200, null=True)
     userProfile = models.ForeignKey(Profile , on_delete= models.CASCADE, related_name= 'profile')
