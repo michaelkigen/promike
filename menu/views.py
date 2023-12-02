@@ -385,9 +385,7 @@ class OrdererdFood(views.APIView):
             return Response({'detail': 'Orders not found.'}, status=status.HTTP_404_NOT_FOUND)
         
         order_serializer = Order_Serializer(orders, many=True)
-        print("4")
-
-               
+        print("4 : ",order_serializer.data)          
 
         return Response(order_serializer.data)
        

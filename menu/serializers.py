@@ -135,12 +135,12 @@ class OrderedFoodSerializer(serializers.ModelSerializer):
 class Order_Serializer(serializers.ModelSerializer):
     ordered_food = OrderedFoodSerializer(many = True)
     total = serializers.SerializerMethodField(method_name='total_price')
-    location = serializers.SerializerMethodField(method_name='get_location')
+    # location = serializers.SerializerMethodField(method_name='get_location')
     user = UserSerializer()
     class Meta:
         model = Order
     
-        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food','location']
+        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food']
         extra_kwarg = {'user':{'read_only': True}}
 
     def total_price(self, order: Order):
@@ -148,11 +148,11 @@ class Order_Serializer(serializers.ModelSerializer):
         price = sum([food.quantity * food.food.price for food in foods])
         return price
     
-    def get_location(self, order: Order):
-        user = order.user  # Access the user directly from the order
-        profile = user.profile
-        location = Location.objects.get(userProfile=profile)
-        return location.name
+    # def get_location(self, order: Order):
+    #     user = order.user  # Access the user directly from the order
+    #     profile = user.profile
+    #     location = Location.objects.get(userProfile=profile)
+    #     return location.name
         
         
 
