@@ -3,7 +3,7 @@ from users.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-from mpesa.models import PaymentTransaction
+
 import uuid
 
 # Create your models here.

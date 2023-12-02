@@ -7,7 +7,7 @@ import uuid
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
-from menu.models import Order
+
 
 
 # Create your models here.
@@ -36,8 +36,6 @@ class PaymentTransaction(models.Model):
     receipt_number = models.CharField(max_length=50,null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL , on_delete=models.PROTECT,related_name='transactions', null= True )
     message = models.CharField(max_length=200, null= True)
-    
-    
     content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.SET_NULL)
     object_id = models.PositiveIntegerField(default=0)
     content_object = GenericForeignKey('content_type', 'object_id')
