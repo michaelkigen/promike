@@ -3,6 +3,8 @@ from .models import Menu_Object, Categories, Cart, Add_item_to_cart,Order , Orde
 from cloudinary.models import CloudinaryField
 from mpesa.models import PaymentTransaction
 from users.serializers import UserSerializer
+from users.models import User
+from Profile.models import Location,Profile
 
 class simple_menu_serializer(serializers.ModelSerializer):
     class Meta:
@@ -133,17 +135,26 @@ class OrderedFoodSerializer(serializers.ModelSerializer):
 class Order_Serializer(serializers.ModelSerializer):
     ordered_food = OrderedFoodSerializer(many = True)
     total = serializers.SerializerMethodField(method_name='total_price')
+    location = serializers.SerializerMethodField(method_name='get_location')
     user = UserSerializer()
     class Meta:
         model = Order
     
-        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food']
+        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food','location']
         extra_kwarg = {'user':{'read_only': True}}
 
     def total_price(self, order: Order):
         foods = order.ordered_food.all()
         price = sum([food.quantity * food.food.price for food in foods])
         return price
+    
+    def get_location(self, order: Order):
+        user = order.user  # Access the user directly from the order
+        profile = user.profile
+        location = Location.objects.get(userProfile=profile)
+        return location.name
+        
+        
 
 class OrderIdSerializer(serializers.Serializer):
     order_id = serializers.UUIDField()
