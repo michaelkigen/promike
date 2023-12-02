@@ -383,19 +383,14 @@ class OrdererdFood(views.APIView):
             orders = Order.objects.all()
         except Order.DoesNotExist:
             return Response({'detail': 'Orders not found.'}, status=status.HTTP_404_NOT_FOUND)
-        print("1")
-        ordered_food = Orderd_Food.objects.filter(order__in=orders)
-        print("2")
-        ordered_food_serializer = OrderedFoodSerializer(ordered_food, many=True)
-        print("3")
+        
         order_serializer = Order_Serializer(orders, many=True)
         print("4")
 
-        if orders.exists():           
+               
 
-            return Response(order_serializer.data)
-        else:
-            return Response({'detail': 'No orders with state "p" found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(order_serializer.data)
+       
 
 
 
