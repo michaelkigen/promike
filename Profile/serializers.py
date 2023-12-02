@@ -26,4 +26,4 @@ class LicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('loc_id','name','userProfile')
-        extra_kwarg = {'userProfile':{'read_only': True}}
+        extra_kwarg = {'loc_id':{'read_only': True}}

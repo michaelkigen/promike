@@ -140,7 +140,7 @@ class Order_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Order
     
-        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food']
+        fields = ['order_id','state','created_at','is_canceled','delivered_at','total','payment_mode','user','ordered_food','location']
         extra_kwarg = {'user':{'read_only': True}}
 
     def total_price(self, order: Order):

@@ -6,6 +6,7 @@ from django.conf import settings
 from cloudinary.models import CloudinaryField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from Profile.models import Location
 
 
 # Create your models here.
@@ -107,6 +108,7 @@ class  Order(models.Model):
     is_canceled = models.BooleanField(default = False)
     payment_mode =models.CharField(max_length=50, choices= MODE_OF_PAYMENTS , default= 'mpesa')
     delivered_at = models.DateTimeField(auto_now=True)
+    location = models.ForeignKey(Location , on_delete= models.CASCADE, related_name= 'order_location', null=True)
     
     class Meta:
         unique_together = ('order_id',)
