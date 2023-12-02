@@ -419,7 +419,7 @@ class OrdererdFood(views.APIView):
                 'location':loc_serializer.data
             }
 
-            return Response(response_data)
+            return Response(order_serializer.data)
         else:
             return Response({'detail': 'No orders with state "p" found.'}, status=status.HTTP_404_NOT_FOUND)
 
