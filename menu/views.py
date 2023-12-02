@@ -217,7 +217,8 @@ class CheckoutView(views.APIView):
         return Response(serializer.data)
     
     def get(self, request):
-        orders = Order.objects.filter(user=request.user)
+        user=self.request.user
+        orders = Order.objects.filter(user=user)
         if not orders:
             return Response({'detail': 'No orders found.'}, status=status.HTTP_404_NOT_FOUND)
         response_data = []
@@ -227,6 +228,7 @@ class CheckoutView(views.APIView):
             order_serializer = Order_Serializer(order)
             orderId = order_serializer.data['order_id']
             trans = PaymentTransaction.objects.filter(order_id = orderId).first()
+            user_serializer = UserDetailedSerializer(user)
             print("ORDER ID ", orderId)
             
             if trans:
@@ -239,7 +241,8 @@ class CheckoutView(views.APIView):
                     'is_canceled':order_serializer.data['is_canceled'] ,
                     'delivered_at':order_serializer.data['delivered_at'] ,
                     'payment_mode':order_serializer.data['payment_mode'],
-                    'ordered_food': ordered_food_serializer.data
+                    'ordered_food': ordered_food_serializer.data,
+                    'user':user_serializer
                 }
                 print(order_data)  
                 response_data.append(order_data)
@@ -252,7 +255,9 @@ class CheckoutView(views.APIView):
                     'is_canceled':order_serializer.data['is_canceled'] ,
                     'delivered_at':order_serializer.data['delivered_at'] ,
                     'payment_mode':order_serializer.data['payment_mode'],
-                    'ordered_food': ordered_food_serializer.data
+                    'ordered_food': ordered_food_serializer.data,
+                    'user':user_serializer
+
                 }
                 print(order_data)  
                 response_data.append(order_data)
