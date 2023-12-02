@@ -25,5 +25,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 class LicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ('loc_id','name','userProfile')
-        extra_kwarg = {'loc_id':{'read_only': True},'userProfile':{'read_only': True}}
+        fields = ('loc_id', 'name', 'userProfile')
+        extra_kwargs = {'loc_id': {'read_only': True}, 'userProfile': {'read_only': True}}
+
+    def create(self, validated_data):
+        # Automatically set userProfile based on the authenticated user
+        validated_data['userProfile'] = self.context['request'].user.profile
+        return super(LicationSerializer, self).create(validated_data)
