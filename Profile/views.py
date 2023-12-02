@@ -58,8 +58,9 @@ class LocationView(views.APIView):
         serializer = LicationSerializer(data=request.data)
         user = self.request.user
         profile = Profile.objects.get(user = user)
-        serializer.data['userProfile'] = profile.profile_id
+        
         if serializer.is_valid():
+            serializer.data['userProfile'] = profile.profile_id
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"warning":"an error occured"},status=status.HTTP_400_BAD_REQUEST)
