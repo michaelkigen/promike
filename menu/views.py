@@ -217,52 +217,55 @@ class CheckoutView(views.APIView):
         return Response(serializer.data)
     
     def get(self, request):
-        user=self.request.user
-        orders = Order.objects.filter(user=user)
-        if not orders:
-            return Response({'detail': 'No orders found.'}, status=status.HTTP_404_NOT_FOUND)
-        response_data = []
-        for order in orders:
-            ordered_food = Orderd_Food.objects.filter(order=order)
-            ordered_food_serializer = OrderedFoodSerializer(ordered_food, many=True)
-            order_serializer = Order_Serializer(order)
-            orderId = order_serializer.data['order_id']
-            trans = PaymentTransaction.objects.filter(order_id = orderId).first()
-            user_serializer = UserDetailedSerializer(user)
-            print("ORDER ID ", orderId)
-            
-            if trans:
-                order_data = {
-                    'order_id': order_serializer.data['order_id'],
-                    'trans_id': trans.trans_id,
-                    'status': order_serializer.data['state'],
-                    'created_at': order_serializer.data['created_at'],
-                    'total': order_serializer.data['total'],
-                    'is_canceled':order_serializer.data['is_canceled'] ,
-                    'delivered_at':order_serializer.data['delivered_at'] ,
-                    'payment_mode':order_serializer.data['payment_mode'],
-                    'ordered_food': ordered_food_serializer.data,
-                    'user':user_serializer
-                }
-                print(order_data)  
-                response_data.append(order_data)
-            else:
-                order_data = {
-                    'order_id': order_serializer.data['order_id'],
-                    'status': order_serializer.data['state'],
-                    'created_at': order_serializer.data['created_at'],
-                    'total': order_serializer.data['total'],
-                    'is_canceled':order_serializer.data['is_canceled'] ,
-                    'delivered_at':order_serializer.data['delivered_at'] ,
-                    'payment_mode':order_serializer.data['payment_mode'],
-                    'ordered_food': ordered_food_serializer.data,
-                    'user':user_serializer
+        try:
+            user = self.request.user
+            orders = Order.objects.filter(user=user)
 
-                }
-                print(order_data)  
-                response_data.append(order_data)
+            if not orders:
+                return Response({'detail': 'No orders found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response(response_data)
+            response_data = []
+
+            for order in orders:
+                ordered_food = Orderd_Food.objects.filter(order=order)
+                ordered_food_serializer = OrderedFoodSerializer(ordered_food, many=True)
+                order_serializer = Order_Serializer(order)
+                orderId = order_serializer.data['order_id']
+                trans = PaymentTransaction.objects.filter(order_id=orderId).first()
+                user_serializer = UserDetailedSerializer(user)
+
+                if trans:
+                    order_data = {
+                        'order_id': order_serializer.data['order_id'],
+                        'trans_id': trans.trans_id,
+                        'status': order_serializer.data['state'],
+                        'created_at': order_serializer.data['created_at'],
+                        'total': order_serializer.data['total'],
+                        'is_canceled': order_serializer.data['is_canceled'],
+                        'delivered_at': order_serializer.data['delivered_at'],
+                        'payment_mode': order_serializer.data['payment_mode'],
+                        'ordered_food': ordered_food_serializer.data,
+                        'user': user_serializer.data
+                    }
+                    response_data.append(order_data)
+                else:
+                    order_data = {
+                        'order_id': order_serializer.data['order_id'],
+                        'status': order_serializer.data['state'],
+                        'created_at': order_serializer.data['created_at'],
+                        'total': order_serializer.data['total'],
+                        'is_canceled': order_serializer.data['is_canceled'],
+                        'delivered_at': order_serializer.data['delivered_at'],
+                        'payment_mode': order_serializer.data['payment_mode'],
+                        'ordered_food': ordered_food_serializer.data,
+                        'user': user_serializer.data
+                    }
+                    response_data.append(order_data)
+
+            return Response(response_data)
+        except Exception as e:
+            print(f"Error in get request: {str(e)}")
+            return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class Orderdetailed(views.APIView):
     def get(self, request, order_id):
