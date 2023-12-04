@@ -112,6 +112,7 @@ class SubmitView(APIView):
     def post(self, request):
         data = request.data
         phone_number = data.get('phone_number')
+        print('PHONE NUMBER :', phone_number)
         user = self.request.user
         cart = Cart.objects.filter(user=user).first()
 
@@ -145,6 +146,7 @@ class SubmitView(APIView):
         
         checkout_view = CheckoutView()
         order_id = checkout_view.post(request).data.get('order_id')
+        print('ORDER_ID: ', order_id)
         
         time.sleep(20)
         confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
