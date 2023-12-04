@@ -156,7 +156,7 @@ class SubmitView(APIView):
             print("DELETED ORDER_ID ",order_id )
             order.delete()
         
-        return Response({'success':'paid','response':confirmation_response})
+        return Response({'success':'dine','response':confirmation_response,'order_id':order_id})
        
 
 def checkTransactionOnline(transaction_id,user,order_id):
