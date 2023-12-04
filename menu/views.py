@@ -321,6 +321,8 @@ class Orderdetailed(views.APIView):
         # Check if is_canceled is being patched to True and state is "p"
         if serializer.validated_data.get("is_canceled") and serializer.validated_data.get("state") == "p":
             serializer.save()
+            order.state = 'f'
+            order.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         # Check if state is being patched to "c"
@@ -345,7 +347,9 @@ class Orderdetailed(views.APIView):
             
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+        elif serializer.validated_data.get("location") != "null":
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
         # If none of the conditions are met, return an appropriate response
         return Response({'detail': 'Invalid operation for the provided data.'}, status=status.HTTP_400_BAD_REQUEST)
 
