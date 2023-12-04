@@ -153,6 +153,7 @@ class SubmitView(APIView):
         print('RESULT CODE', confirmation_response['result_code'])
         if confirmation_response['result_code'] != 0:
             order = Order.objects.get(order_id = order_id)
+            print("DELETED ORDER_ID ",order_id )
             order.delete()
         
         return Response({'success':'paid','response':confirmation_response})
