@@ -151,7 +151,7 @@ class SubmitView(APIView):
         time.sleep(20)
         confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
         print('RESULT CODE', confirmation_response['result_code'])
-        if confirmation_response['result_code'] != 0:
+        if confirmation_response['result_code'] != "0":
             order = Order.objects.get(order_id = order_id)
             print("DELETED ORDER_ID ",order_id )
             order.delete()
