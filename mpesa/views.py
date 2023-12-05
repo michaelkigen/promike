@@ -147,7 +147,6 @@ class SubmitView(APIView):
     def post(self, request):
         data = request.data
         phone_number = data.get('phone_number')
-        print('PHONE NUMBER :', phone_number)
         user = self.request.user
         cart = Cart.objects.filter(user=user).first()
 
@@ -160,9 +159,6 @@ class SubmitView(APIView):
         total = sum([item.quantity * item.food.price for item in cart.cart_item.all()])
         amount = total
         print('the total amount is: ', amount)
-        
-        if amount == 0 :
-            return Response({"error":"the total value is zero"}, status=status.HTTP_400_BAD_REQUEST)
 
         entity_id = 0
         if data.get('entity_id'):
@@ -176,108 +172,72 @@ class SubmitView(APIView):
         print('TRANSACTION INSTANCE :', trans)
         transaction_id = sendSTK(phone_number, amount, entity_id, transaction_id=trans)
 
-        transaction = PaymentTransaction.objects.filter(trans_id=transaction_id).first()
+        # b2c()
         
         
-        checkout_view = CheckoutView()
-        order_id = checkout_view.post(request).data.get('order_id')
-        print('ORDER_ID: ', order_id)
-        
-        time.sleep(20)
-        confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
-        print('RESULT CODE', confirmation_response['result_code'])
-        if confirmation_response['result_code'] != "0":
-            order = Order.objects.get(order_id = order_id)
-            print("DELETED ORDER_ID ",order_id )
-            order.delete()
-        
-        # send_sms(order_id)
-        
-        return Response({'success':'done','response':confirmation_response,'order_id':order_id})
-        
-
-def checkTransactionOnline(transaction_id,user,order_id):
-    print('pay 1')
-    try:
-        transaction = PaymentTransaction.objects.filter(trans_id=transaction_id).first()
-    except PaymentTransaction.DoesNotExist:
-        print('pay 2')
-    try:
-        if transaction and transaction.checkout_request_id:
-            print('pay 3 :',transaction.checkout_request_id )
-            print('pay 4 :')
-            status_response = check_payment_status(transaction.checkout_request_id)
-            print("status response")
-            status = status_response.get('status')
-            print('STATUS: ', status)
-            message = status_response.get('message')
-            
-            if status == True:
-                
-                
-                print('ORDER_ID :', order_id)
-
-                transaction.order_id = order_id
-                transaction.is_finished = True
-                transaction.is_successful = True
-                transaction.user = user
-                transaction.message = message
-                transaction.save()
-                print('SAVED TRANSACTION :', transaction)
-            
-                
-                #handling  points  
-                amount = transaction.amount  
-                profile = Profile.objects.get(user=user) 
-                
-            
-                if amount >= 50:
-                    profile.points += 5  
-                    profile.save()
-                #sending email
-              
-
-            return status_response
-        else:
-            return JsonResponse({
-                "message": "Server Error. Transaction not found",
-                "status": False
-            }, status=400)
-    except PaymentTransaction.DoesNotExist:
-        return JsonResponse({
-            "message": "Server Error. Transaction not found",
-            "status": False
-        }, status=400)
+        message = {"status": "ok", "transaction_id": transaction_id}
+        return Response(message, status=HTTP_200_OK)
 
 
-class CheckTransaction(APIView):
-    permission_classes = [AllowAny, ]
+class CheckTransactionOnline(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        data = request.data
-        trans_id = data['transaction_id']
+        trans_id = request.data['transaction_id']
+        print("CHECK TRANSACTYION ID ", trans_id)
+        transaction = PaymentTransaction.objects.filter(trans_id=trans_id).first()
+        print("TRANSACTION TABLE CHECKED")
+
         try:
-            transaction = PaymentTransaction.objects.filter(id=trans_id).get()
-            if transaction:
-                return JsonResponse({
-                    "message": "ok",
-                    "finished": transaction.is_finished,
-                    "successful": transaction.is_successful
-                },
-                    status=200)
+            if transaction and transaction.checkout_request_id:
+                status_response = check_payment_status(transaction.checkout_request_id)
+                print("status response")
+                status = status_response.get('status')
+                print('STATUS: ', status)
+                message = status_response.get('message')
+                
+                if status == True:
+                    user = request.user
+                    checkout_view = CheckoutView()
+                    order_id = checkout_view.post(request).data.get('order_id')
+                    print('ORDER_ID :', order_id)
+
+                    transaction.order_id = order_id
+                    transaction.is_finished = True
+                    transaction.is_successful = True
+                    transaction.user = user
+                    transaction.message = message
+                    transaction.save()
+                    print('SAVED TRANSACTION :', transaction)
+                    
+                    # GENERATION OF QR CODE
+                    
+                   
+                
+                   #handling  points  
+                    amount = transaction.amount  
+                    profile = Profile.objects.get(user=user) 
+                    
+               
+                    if amount >= 50:
+                        profile.points += 5
+                        profile.save()
+                   #sending email
+                    
+                    
+                 # Pass the transaction as a list
+
+                return JsonResponse(status_response, status=200)
             else:
-                # TODO : Edit order if no transaction is found
                 return JsonResponse({
-                    "message": "Error. Transaction not found",
+                    "message": "Server Error. Transaction not found",
                     "status": False
-                },
-                    status=400)
+                }, status=400)
         except PaymentTransaction.DoesNotExist:
             return JsonResponse({
                 "message": "Server Error. Transaction not found",
                 "status": False
-            },
-                status=400)
+            }, status=400)
 
 
 class RetryTransaction(APIView):
