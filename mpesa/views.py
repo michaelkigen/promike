@@ -191,7 +191,7 @@ class SubmitView(APIView):
             print("DELETED ORDER_ID ",order_id )
             order.delete()
         
-        send_sms(order_id)
+        # ssend_sms(order_id)
         
         return Response({'success':'done','response':confirmation_response,'order_id':order_id})
         
