@@ -198,9 +198,10 @@ class SubmitView(APIView):
 
 def checkTransactionOnline(transaction_id,user,order_id):
     print('pay 1')
-
-    transaction = PaymentTransaction.objects.filter(trans_id=transaction_id).first()
-    print('pay 2')
+    try:
+        transaction = PaymentTransaction.objects.filter(trans_id=transaction_id).first()
+    except PaymentTransaction.DoesNotExist:
+        print('pay 2')
     try:
         if transaction and transaction.checkout_request_id:
             print('pay 3 :',transaction.checkout_request_id )
