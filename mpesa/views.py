@@ -183,7 +183,7 @@ class SubmitView(APIView):
         order_id = checkout_view.post(request).data.get('order_id')
         print('ORDER_ID: ', order_id)
         
-        time.sleep(20)
+        time.sleep(10)
         confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
         print('RESULT CODE', confirmation_response['result_code'])
         if confirmation_response['result_code'] != "0":
@@ -191,7 +191,7 @@ class SubmitView(APIView):
             print("DELETED ORDER_ID ",order_id )
             order.delete()
         
-        # ssend_sms(order_id)
+        # send_sms(order_id)
         
         return Response({'success':'done','response':confirmation_response,'order_id':order_id})
         
