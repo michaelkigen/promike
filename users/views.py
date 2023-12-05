@@ -106,8 +106,8 @@ class Verify_Code(APIView):
         
 class Delete_code_db(APIView):
     def post( self , request):
-        email = request.data.get('email')
-        Verifications.objects.filter(email = email).delete()
+        phone_number = request.data.get('phone_number')
+        Verifications.objects.filter(phone_number = phone_number).delete()
         return Response({'message':'verification deleted'}, status= status.HTTP_200_OK)
 
 class CheckTokenView(APIView):
