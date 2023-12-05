@@ -145,34 +145,50 @@ def get_tokens_for_user(user):
 
 class User_registration(APIView):
     def post(self, request):
+        print('reg 1')
         serializer = UserSerializer(data=request.data, context={'request': request})
+        print('reg 2')
         serializer.is_valid(raise_exception=True)
+        print('reg 3')
 
         verification_code = request.data.get('verification_code')
+        print('reg 4')
         phone_number = request.data.get('phone_number')
+        print('reg 5')
+        
 
         try:
             verification = Verifications.objects.get(phone_number=phone_number)
+            print('reg 6')
             print(f' the V code is:{verification.verification_code}')
             if verification_code != verification.verification_code:
+                print('reg 7')
                 return Response({'message': 'Invalid verification code'}, status=status.HTTP_400_BAD_REQUEST)
+                print('reg 8')
     
         except Verifications.DoesNotExist:
             return Response({'message': 'Invalid verification code'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
+        print('reg 9')
         sent_time = verification.verification_code_sent
+        print('reg 10')
         current_time = datetime.now(timezone.utc)
+        print('reg 11')
         delta = current_time - sent_time
         print(f'time enterd is: {delta}')
         if abs(delta.total_seconds()) > 60:
             Verifications.objects.filter(phone_number = phone_number).delete()
             return Response({'message': 'Verification code has expired. Please request a new code.'},
                             status=status.HTTP_400_BAD_REQUEST)
-
+        print('reg 12')
         user = serializer.save()
+        print('reg 13 :',user)
         user.is_verified = True
+        print('reg 14')
         user.save()
+        print('reg 15')
         Verifications.objects.filter(phone_number = phone_number).delete()
+        print('reg 16')
 
         token = get_tokens_for_user(user)
         refresh_token = str(token)
