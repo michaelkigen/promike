@@ -183,7 +183,7 @@ class SubmitView(APIView):
         order_id = checkout_view.post(request).data.get('order_id')
         print('ORDER_ID: ', order_id)
         
-        time.sleep(10)
+        time.sleep(20)
         confirmation_response  = checkTransactionOnline(transaction_id,user,order_id)
         print('RESULT CODE', confirmation_response['result_code'])
         if confirmation_response['result_code'] != "0":
