@@ -1,7 +1,7 @@
 from datetime import datetime
 from .serializers import UserSerializer, UserLoginSerializer, PhoneNumberCheckerSerializer , Change_password_Serializer ,Verification_serializer,Reset_PasswordSerializer,UserDetailedSerializer
 from .models import User, Verifications
-from .emailer import send_Verification_Email, generate_verification_code 
+from .emailer import generate_verification_code 
 
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
@@ -17,6 +17,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import TokenBlacklist
 
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+
+
 class PasswordChecker(APIView):
     def post(self , request):
         password = request.data.get('password')
@@ -27,28 +31,59 @@ class PasswordChecker(APIView):
         return Response({'message':'correct password'}, status= status.HTTP_202_ACCEPTED)
         
 
-class Send_verification_code(APIView):
-    def post(self , request):
-        email = request.data.get('email')
-        name = request.data.get('name')
-        
-        verify = Verifications.objects.filter(email = email)
-        if verify is not None:
-            verify.delete()
-        
+
+class SendVerificationCode(APIView):
+    def post(self, request):
+        phone_number = request.data.get('phone_number')
+        print(phone_number)
+
+        # Validate input parameters
+
+        try:
+            # Check if a verification record already exists for the phone number
+            verification_record = Verifications.objects.get(phone_number=phone_number)
+            verification_record.delete()
+        except Verifications.DoesNotExist:
+            pass  # No existing record, proceed
+
         verification_code = generate_verification_code()
-        print(f'the code is:{verification_code}') 
-        Verifications.verification_code = verification_code
-        send_Verification_Email(request, email, name, verification_code)
-        return Response({'message': 'Verification code has been sent','verification_code':verification_code},
-                                status=status.HTTP_200_OK)
+        print(verification_code)
+
+        # Save verification code to the database
+        verifications = Verifications.objects.create(
+            phone_number=phone_number,
+            verification_code=verification_code,
+            verification_code_sent=datetime.now(timezone.utc)
+        )
+        print('code saved')
+
+        # Send SMS using Twilio
+        try:
+            print('step 1')
+            account_sid = "AC94d634c48c7f12dfb8f6af8f0b1614c2"
+            auth_token = "50917f3e65a520aeb570f376e9b1a5e5"
+            client = Client(account_sid, auth_token)
+            print('step 2')
+            message = client.messages.create(
+                body=f"Your Verification code is {verification_code}.",
+                from_='+13343842451',
+                to=phone_number
+            )
+            print('step 3')
+        except TwilioRestException as e:
+            print(f"Twilio error: {e}")
+            # Handle the exception or return an error response
+            return Response({'error': 'Failed to send the SMS. Please try again later.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({'message': 'Verification code has been sent', 'verification_code': verification_code})
+
 
 class Verify_Code(APIView):
     def post(self, request):
         serializer = Verification_serializer(data= request.data)
-        email = serializer.data.get('email')
+        phone_number = serializer.data.get('phone_number')
         verfication_code = serializer.data.get('verification_code')
-        verify = Verifications.objects.filter(email = email)
+        verify = Verifications.objects.filter(phone_number = phone_number)
         if verify is None:
             return Response({'message':'code not found'})
         
@@ -61,7 +96,7 @@ class Verify_Code(APIView):
         delta = current_time - sent_time
         
         if abs(delta.total_seconds()) > 60:
-            Verifications.objects.filter(email = email).delete()
+            Verifications.objects.filter(phone_number = phone_number).delete()
             return Response({'message': 'Verification code has expired. Please request a new code.'},
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -114,10 +149,10 @@ class User_registration(APIView):
         serializer.is_valid(raise_exception=True)
 
         verification_code = request.data.get('verification_code')
-        email = request.data.get('email')
+        phone_number = request.data.get('phone_number')
 
         try:
-            verification = Verifications.objects.get(email=email)
+            verification = Verifications.objects.get(phone_number=phone_number)
             print(f' the V code is:{verification.verification_code}')
             if verification_code != verification.verification_code:
                 return Response({'message': 'Invalid verification code'}, status=status.HTTP_400_BAD_REQUEST)
@@ -130,14 +165,14 @@ class User_registration(APIView):
         delta = current_time - sent_time
         print(f'time enterd is: {delta}')
         if abs(delta.total_seconds()) > 60:
-            Verifications.objects.filter(email = email).delete()
+            Verifications.objects.filter(phone_number = phone_number).delete()
             return Response({'message': 'Verification code has expired. Please request a new code.'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save()
         user.is_verified = True
         user.save()
-        Verifications.objects.filter(email = email).delete()
+        Verifications.objects.filter(phone_number = phone_number).delete()
 
         token = get_tokens_for_user(user)
         refresh_token = str(token)

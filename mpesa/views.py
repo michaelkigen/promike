@@ -49,9 +49,44 @@ import qrcode
 from PIL import Image
 from menu.views import CheckoutView
 from django.shortcuts import get_object_or_404
-from users.emailer import Orderdfood_emailer
+from users.emailer import send_center_sms
 # Create your views here.
 
+def send_sms(order_id):
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        return 'Order not found'
+
+    # Access user details from the order
+    user_details = {
+        'user_id': order.user.id,
+        'user_phone_number': order.user.phone_number,
+        'user_first_name': order.user.first_name,
+        'user_last_name': order.user.last_name,
+    }
+
+    # Access the related food items through the ordered_food reverse relation
+    food_items = order.ordered_food.all()
+
+    # Create a list to store food item dictionaries
+    food_list = []
+
+    # Loop through food items and add each item's details to the list
+    for food_item in food_items:
+        food_details = {
+            'food_name': food_item.food.food_name,
+            'quantity': food_item.quantity,
+            'sub_total': food_item.sub_total,
+            # Add more food details as needed
+        }
+        food_list.append(food_details)
+    send_center_sms(food_list,user_details)
+    # If you want to return or do something with the user details and food items, modify the function accordingly
+    return 'SMS sent successfully', user_details, food_list
+
+    
+    
     
 class Redeem_points(APIView):
     permission_classes = [AllowAny, ]
@@ -156,8 +191,10 @@ class SubmitView(APIView):
             print("DELETED ORDER_ID ",order_id )
             order.delete()
         
-        return Response({'success':'dine','response':confirmation_response,'order_id':order_id})
-       
+        send_sms(order_id)
+        
+        return Response({'success':'done','response':confirmation_response,'order_id':order_id})
+        
 
 def checkTransactionOnline(transaction_id,user,order_id):
  

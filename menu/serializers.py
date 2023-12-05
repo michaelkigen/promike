@@ -120,17 +120,39 @@ class CartSerializer(serializers.ModelSerializer):
         cart.items.set(cart_items)
         return cart'''
         
-class OrderedFoodSerializer(serializers.ModelSerializer):
-    sub_total = serializers.SerializerMethodField(method_name= 'total')
+# class OrderedFoodSerializer(serializers.ModelSerializer):
+#     sub_total = serializers.SerializerMethodField(method_name= 'total')
 
-    food = Menu_ObjectSerializer(many =False)
+#     food = Menu_ObjectSerializer(many =False)
  
+#     class Meta:
+#         model = Orderd_Food
+#         fields = ['food', 'quantity', 'sub_total']
+
+#     def total(self, obj):
+#         return obj.quantity * obj.food.price
+class OrderedFoodSerializer(serializers.ModelSerializer):
+    sub_total = serializers.SerializerMethodField(method_name='total')
+
+    food = Menu_ObjectSerializer(many=False)
+
     class Meta:
         model = Orderd_Food
         fields = ['food', 'quantity', 'sub_total']
 
     def total(self, obj):
         return obj.quantity * obj.food.price
+
+    def create(self, validated_data):
+        # Calculate and set sub_total before creating the Orderd_Food instance
+        validated_data['sub_total'] = validated_data['quantity'] * validated_data['food'].price
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # Calculate and set sub_total before updating the Orderd_Food instance
+        validated_data['sub_total'] = validated_data['quantity'] * validated_data['food'].price
+        return super().update(instance, validated_data)
+
     
 class Order_Serializer(serializers.ModelSerializer):
     ordered_food = OrderedFoodSerializer(many = True)
