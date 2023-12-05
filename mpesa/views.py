@@ -226,8 +226,9 @@ class CheckTransactionOnline(APIView):
                     
                     
                  # Pass the transaction as a list
-
-                return JsonResponse({"response":status_response,"order_id":order_id}, status=200)
+                if status_response["result_code"] == "0":
+                    return JsonResponse({"response":status_response,"order_id":order_id}, status=200)
+                return JsonResponse(status_response, status=200)
             else:
                 return JsonResponse({
                     "message": "Server Error. Transaction not found",
