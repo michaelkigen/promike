@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import django_heroku
+
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
@@ -107,11 +107,11 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
-#         'PASSWORD': '4482',
+#         'NAME': 'yahmz',
+#         'USER': 'yahmzdb',
+#         'PASSWORD': 'ottf1234',
 #         'HOST': 'localhost',
-#         'PORT': '5432',
+#         'PORT': '',
 #     }
 # }
 
@@ -175,27 +175,6 @@ SIMPLE_JWT = {
     
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST ='smtp.mailgun.org'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'postmaster@sandbox107759f3eb224b05bb638859dd41fed2.mailgun.org'
-EMAIL_HOST_PASSWORD = '974e6539e4125a6262630a89431c28b6-30344472-944c6f90'
-EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 465
-# EMAIL_HOST_USER = 'emailer@maiyotech.com'
-# EMAIL_HOST_PASSWORD = 'Ottf1234$'
-# EMAIL_USE_SSL = True
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.mail.yahoo.com'
-# EMAIL_HOST_USER = 'maiyo.michael@yahoo.com'
-# EMAIL_HOST_PASSWORD = 'Ottf1234$'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_USE_SSL = False
 
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -214,11 +193,6 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': 'mCkDKKHFfJjwY8WekxJcDOmCELA',
 }
 
-# termii  
-#code sender to phone numbers
-
-TERMII_API_KEY = 'your_termii_api_key'
-TERMII_SENDER_ID = 'your_termii_sender_id'
 
 ## Mpesa configuration
 MPESA_ENVIRONMENT = 'production'
@@ -249,4 +223,3 @@ TILL_NUMBER = '5737915'
 
 HASHID_FIELD_SALT = "xcv24371DFGT"
 
-django_heroku.settings(locals())
