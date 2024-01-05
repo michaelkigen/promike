@@ -15,8 +15,12 @@ from datetime import timedelta
 from django.conf import settings
 import cloudinary_storage
 import os
+import json
 from dotenv import load_dotenv ,dotenv_values
 load_dotenv()
+
+with open('/etc/config.json') as config_file:
+    config = json.load(config_file)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -201,13 +205,13 @@ CLOUDINARY_STORAGE = {
 ## Mpesa configuration
 MPESA_ENVIRONMENT = 'production'
 HOST_NAME=  'https://treegroup@maiyotech.com'   
-CONSUMER_KEY =os.environ.get("MPESA_CONSUMER_KEY")
-CONSUMER_SECRET =os.environ.get("MPESA_CONSUMER_SECRET")
+CONSUMER_KEY =config["MPESA_CONSUMER_KEY"]
+CONSUMER_SECRET =config["MPESA_CONSUMER_SECRET"]
 MPESA_SHORTCODE = '7709807'
 SAFARICOM_API = 'https://api.safaricom.co.ke'
 MPESA_EXPRESS_SHORTCODE = '7709807'
 MPESA_SHORTCODE_TYPE = 'till'
-MPESA_PASSKEY = os.environ.get("MPESA_PASS_KEY")
+MPESA_PASSKEY = config["MPESA_PASS_KEY"]
 MPESA_INITIATOR_SECURITY_CREDENTIAL = 'Safaricom999!*!'
 AUTH_URL = '/oauth/v1/generate?grant_type=client_credentials'
 TRANSACTION_TYPE= 'CustomerBuyGoodsOnline'
