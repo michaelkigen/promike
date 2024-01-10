@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
-import cloudinary_storage
+# import cloudinary_storage
 import os
 import json
 from dotenv import load_dotenv ,dotenv_values
