@@ -11,7 +11,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 import sys
 print("THIS ID THE WSGI FILE THAT GIVE SOME ERROR")
-print(sys.path)
+print("THE PATH",sys.path)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pro.settings')
 
