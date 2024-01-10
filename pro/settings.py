@@ -34,7 +34,7 @@ SECRET_KEY = config["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['yahmz.com','www.yahmz.com']
+ALLOWED_HOSTS = ['yahmz.com','www.yahmz.com','74.208.98.218']
 
 
 # Application definition
