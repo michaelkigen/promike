@@ -16,8 +16,8 @@ from django.conf import settings
 # import cloudinary_storage
 import os
 import json
-from dotenv import load_dotenv ,dotenv_values
-load_dotenv()
+# from dotenv import load_dotenv ,dotenv_values
+# load_dotenv()
 
 with open('/etc/config.json') as config_file:
     config = json.load(config_file)
