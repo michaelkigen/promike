@@ -13,7 +13,7 @@ import sys
 print("THIS ID THE WSGI FILE THAT GIVE SOME ERROR")
 print("THE PATH",sys.path)
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pro.settings')
-
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pro.settings')
+os.environ["DJANGO_SETTINGS_MODULE"] = "pro.settings"
 application = get_wsgi_application()
   
