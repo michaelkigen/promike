@@ -61,7 +61,7 @@ class SendVerificationCode(APIView):
         try:
             print('step 1')
             account_sid = "AC94d634c48c7f12dfb8f6af8f0b1614c2"
-            auth_token = "50917f3e65a520aeb570f376e9b1a5e5"
+            auth_token = "98636a4a87699fd0951f2c06ddd3a21f"
             client = Client(account_sid, auth_token)
             print('step 2')
             message = client.messages.create(
