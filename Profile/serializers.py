@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Profile, Location
 from cloudinary import uploader
-from mpesa.models import PaymentTransaction
 
 
 class ProfileSerializer(serializers.ModelSerializer):
