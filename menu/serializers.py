@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from .models import Menu_Object, Categories, Cart, Add_item_to_cart,Order , Orderd_Food
-from cloudinary.models import CloudinaryField
 from users.serializers import UserSerializer
-from users.models import User
-from Profile.models import Location,Profile
 
 class simple_menu_serializer(serializers.ModelSerializer):
     class Meta:
