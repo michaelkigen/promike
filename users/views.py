@@ -73,7 +73,10 @@ class SendVerificationCode(APIView):
         except TwilioRestException as e:
             print(f"Twilio error: {e}")
             # Handle the exception or return an error response
-            return Response({'error': 'Failed to send the SMS. Please try again later.','status':e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            error_message = str(e.msg) if e.msg else 'Failed to send the SMS. Please try again later.'
+
+            
+            return Response({'error': error_message, 'status': e.code}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'message': 'Verification code has been sent', 'verification_code': verification_code})
 
