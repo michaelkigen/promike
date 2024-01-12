@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'django_filters',
     'cloudinary_storage',
     'cloudinary',
-    'mpesa',
+    'payments',
     'django_daraja',
     'reciept',
     'records',
