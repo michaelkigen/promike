@@ -24,7 +24,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View
-from .mpesa_op import sendSTK, check_payment_status
+from .operations import sendSTK, check_payment_status
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST,HTTP_404_NOT_FOUND
