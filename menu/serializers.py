@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Menu_Object, Categories, Cart, Add_item_to_cart,Order , Orderd_Food
 from cloudinary.models import CloudinaryField
-from mpesa.models import PaymentTransaction
 from users.serializers import UserSerializer
 from users.models import User
 from Profile.models import Location,Profile
