@@ -29,7 +29,7 @@ from django.conf import settings
 from records.views import recorder
 import cloudinary.uploader
 from rest_framework.decorators import action
-from mpesa.models import PaymentTransaction
+from payments.models import PaymentTransaction
 
 # Create your views here.
 class MenuAPiView(viewsets.ModelViewSet):
