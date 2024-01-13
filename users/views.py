@@ -3,6 +3,7 @@ from .serializers import UserSerializer, UserLoginSerializer, PhoneNumberChecker
 from .models import User, Verifications
 from .emailer import generate_verification_code 
 
+
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password , make_password
@@ -236,7 +237,6 @@ class UserDetail(APIView):
 
         user.delete()
         return Response({'message': 'User deleted'}, status=status.HTTP_204_NO_CONTENT)
-    
 
 
 
@@ -245,29 +245,32 @@ class Login_View(APIView):
         serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         phone_number = str(serializer.data.get('phone_number'))
-        print(phone_number)
         password = str(serializer.data.get('password'))
-        print(password)
-    
-        user = authenticate(self,phone_number=phone_number, password=password)
-        print(user)
+
+        user = authenticate(request, phone_number=phone_number, password=password)
+        
         if user is None:
-            return Response({'errors':{'non_field_errors':['phone_number or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
-        
-        details =  User.objects.get(phone_number = phone_number)
-        
-        token = get_tokens_for_user(user)
-        acess_token =str(token.access_token)
-        response = Response()
-        response.set_cookie(key='refresh_token', value= token, httponly=True)
-        response.data = {
-            'phone':str(phone_number),
-            'email':str(details.email),
-            'name':str(details.first_name),
-        'acess_token': str(acess_token),
-        'msg':'loged in Successfully'
-        }
-        return response
+            return Response({'errors': {'non_field_errors': ['phone_number or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
+
+        # Ensure authentication was successful before proceeding
+        if user.is_authenticated:
+            details = User.objects.get(phone_number=phone_number)
+            token = get_tokens_for_user(user)
+            access_token = str(token.access_token)
+
+            response = Response()
+            response.set_cookie(key='refresh_token', value=token, httponly=True)
+            response.data = {
+                'phone': str(phone_number),
+                'email': str(details.email),
+                'name': str(details.first_name),
+                'access_token': str(access_token),
+                'msg': 'Logged in Successfully'
+            }
+            return response
+        else:
+            return Response({'errors': {'non_field_errors': ['Authentication failed']}}, status=status.HTTP_401_UNAUTHORIZED)
+
     
 
 
